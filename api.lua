@@ -215,7 +215,12 @@ end
 -- check if mob is dead or only hurt
 function check_for_death(self)
 
-	--print ("Health is", self.health)
+	-- has health actually changed?
+	if self.health == self.old_health then
+		return
+	end
+
+	self.old_health = self.health
 
 	-- still got some health? play hurt sound
 	if self.health > 0 then
@@ -2075,9 +2080,9 @@ minetest.register_entity(name, {
 		self.path.stuck_timer = 0 -- if stuck for too long search for path
 		-- end init
 
-		--self.object:set_hp(self.health)
 		self.object:set_armor_groups({immortal = 1, fleshy = self.armor})
 		self.old_y = self.object:getpos().y
+		self.old_health = self.health
 		self.object:setyaw((math.random(0, 360) - 180) / 180 * pi)
 		self.sounds.distance = self.sounds.distance or 10
 		self.textures = textures
