@@ -77,6 +77,8 @@ set_animation = function(self, type)
 
 	self.animation.current = self.animation.current or ""
 
+	self.animation.speed_normal = self.animation.speed_normal or 15
+
 	if type == "stand"
 	and self.animation.current ~= "stand" then
 
@@ -117,7 +119,7 @@ set_animation = function(self, type)
 			self.object:set_animation({
 				x = self.animation.run_start,
 				y = self.animation.run_end},
-				self.animation.speed_run, 0)
+				(self.animation.speed_run or self.animation.speed_normal), 0)
 
 			self.animation.current = "run"
 		end
@@ -132,7 +134,7 @@ set_animation = function(self, type)
 			self.object:set_animation({
 				x = self.animation.punch_start,
 				y = self.animation.punch_end},
-				self.animation.speed_normal, 0)
+				(self.animation.speed_punch or self.animation.speed_normal), 0)
 
 			self.animation.current = "punch"
 		end
