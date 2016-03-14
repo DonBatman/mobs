@@ -1,4 +1,4 @@
--- Mobs Api (12th March 2016)
+-- Mobs Api (14th March 2016)
 mobs = {}
 mobs.mod = "redo"
 
@@ -503,7 +503,13 @@ function entity_physics(pos, radius)
 		dist = math.max(1, get_distance(pos, obj_pos))
 
 		local damage = math.floor((4 / dist) * radius)
-		obj:set_hp(obj:get_hp() - damage)
+		local ent = obj:get_luaentity()
+
+		if obj:is_player() then
+			obj:set_hp(obj:get_hp() - damage)
+		elseif ent.health then
+			ent.health = ent.health - damage
+		end
 	end
 end
 
@@ -945,6 +951,7 @@ minetest.register_entity(name, {
 	runaway_timer = 0,
 	pathfinding = def.pathfinding,
 	immune_to = def.immune_to or {},
+	explosion_radius = def.explosion_radius,
 
 	on_step = function(self, dtime)
 
@@ -1559,9 +1566,10 @@ minetest.register_entity(name, {
 				if self.timer > 3 then
 
 					local pos = self.object:getpos()
+					local radius = self.explosion_radius or 1
 
 					-- hurt player/mobs caught in blast area
-					entity_physics(pos, 3)
+					entity_physics(pos, radius)
 
 					-- dont damage anything if area protected or next to water
 					if minetest.find_node_near(pos, 1, {"group:water"})
@@ -1585,7 +1593,7 @@ minetest.register_entity(name, {
 
 					pos.y = pos.y - 1
 
-					mobs:explosion(pos, 2, 0, 1, self.sounds.explode)
+					mobs:explosion(pos, radius, 0, 1, self.sounds.explode)
 
 					self.object:remove()
 
