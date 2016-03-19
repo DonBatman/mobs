@@ -1,4 +1,4 @@
--- Mobs Api (14th March 2016)
+-- Mobs Api (19th March 2016)
 mobs = {}
 mobs.mod = "redo"
 
@@ -452,8 +452,9 @@ do_jump = function(self)
 
 --print ("in front:", nod.name, pos.y + 0.5)
 
-	if minetest.registered_items[nod.name].walkable
+	if (minetest.registered_items[nod.name].walkable
 	and not nod.name:find("fence")
+	and not nod.name:find("gate"))
 	or self.walk_chance == 0 then
 
 		local v = self.object:getvelocity()
@@ -507,8 +508,14 @@ function entity_physics(pos, radius)
 
 		if obj:is_player() then
 			obj:set_hp(obj:get_hp() - damage)
+
 		elseif ent.health then
-			ent.health = ent.health - damage
+
+			obj:punch(obj, 1.0, {
+				full_punch_interval = 1.0,
+				damage_groups = {fleshy = damage},
+			}, nil)
+
 		end
 	end
 end
